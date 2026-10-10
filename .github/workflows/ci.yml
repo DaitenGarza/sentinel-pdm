@@ -1,0 +1,168 @@
+# Continuous integration.
+#
+#   test       unit tests plus a quick end-to-end pipeline run on the two platforms people
+#              actually use the project on, at the oldest and the recommended Python version.
+#   launchers  the newcomer path on a fresh checkout: setup.bat / setup.sh exactly as a
+#              double-click runs them (full training run included), then run.bat / run.sh
+#              must serve the dashboard.
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # UTF-8 console output on Windows runners, and no prompts, pauses or browser from the scripts.
+  PYTHONUTF8: "1"
+  PYTHONIOENCODING: utf-8
+  SENTINEL_NONINTERACTIVE: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+
+defaults:
+  run:
+    # bash on every OS (Git Bash on Windows) so a failing command always fails the step.
+    shell: bash
+
+jobs:
+  test:
+    name: Tests / ${{ matrix.os }} / Python ${{ matrix.python-version }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ["3.10", "3.12"]
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            requirements.txt
+
+      - name: Check the launcher scripts (syntax and line endings)
+        run: |
+          bash -n setup.sh run.sh
+          python - <<'EOF'
+          from pathlib import Path
+
+          # cmd.exe misreads labels and blocks in LF-only batch files and bash fails on CRLF;
+          # .gitattributes pins both, this catches an editor or a checkout that undid it.
+          bad = [p.name for p in Path().glob("*.bat") if b"\n" in p.read_bytes().replace(b"\r\n", b"")]
+          bad += [p.name for p in Path().glob("*.sh") if b"\r" in p.read_bytes()]
+          if bad:
+              raise SystemExit(f"Wrong line endings in: {', '.join(bad)}")
+          EOF
+
+      - name: Install the package with test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+
+      - name: Unit tests
+        run: python -m pytest
+
+      - name: End-to-end smoke run (small fleet)
+        run: python -m sentinel_pdm train --quick --no-importance
+
+  launchers:
+    name: Launchers / ${{ matrix.os }}
+    needs: test
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v5
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            pyproject.toml
+            requirements.txt
+
+      - name: setup.bat (environment, packages, full training run, real-data benchmark)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          cmd /c setup.bat
+          exit $LASTEXITCODE
+
+      - name: setup.sh (environment, packages, full training run, real-data benchmark)
+        if: runner.os != 'Windows'
+        run: bash setup.sh
+
+      - name: run.bat / run.sh serves the dashboard
+        run: |
+          python - <<'EOF'
+          """Start the launcher as a double-click would, wait until the dashboard answers, stop it."""
+          import os
+          import re
+          import signal
+          import subprocess
+          import sys
+          import time
+          import urllib.request
+          from pathlib import Path
+
+          windows = os.name == "nt"
+          log_path = Path("launcher.log")
+          opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))  # never via a proxy
+
+
+          def status(url: str) -> int | None:
+              try:
+                  with opener.open(url, timeout=5) as response:
+                      return response.status
+              except OSError:  # refused, reset, timed out or an HTTP error
+                  return None
+
+
+          with log_path.open("wb") as log:
+              launcher = subprocess.Popen(["cmd", "/c", "run.bat"] if windows else ["bash", "run.sh"],
+                                          stdout=log, stderr=subprocess.STDOUT, stdin=subprocess.DEVNULL,
+                                          start_new_session=not windows)
+          healthy, home, port = False, None, None
+          try:
+              deadline = time.monotonic() + 900  # generous: run.bat may have to run setup first
+              while not healthy and time.monotonic() < deadline and launcher.poll() is None:
+                  time.sleep(2)
+                  # The launcher announces the free port it picked before starting the server.
+                  found = re.search(r"running at http://localhost:(\d+)", log_path.read_text("utf-8", "replace"))
+                  port = found and found.group(1)
+                  healthy = bool(port) and status(f"http://127.0.0.1:{port}/_stcore/health") == 200
+              home = status(f"http://127.0.0.1:{port}/") if healthy else None
+          finally:
+              # Stop the whole tree: the launcher's shell and the Streamlit server it started.
+              if windows:
+                  subprocess.run(["taskkill", "/F", "/T", "/PID", str(launcher.pid)], capture_output=True)
+              else:
+                  os.killpg(launcher.pid, signal.SIGTERM)
+              launcher.wait(timeout=60)
+          print(log_path.read_text("utf-8", "replace"))
+          if not (healthy and home == 200):
+              sys.exit(f"The dashboard did not come up (port {port}, health ok: {healthy}, home page: {home}).")
+          print(f"Dashboard answered on port {port}: health ok, home page HTTP {home}.")
+          EOF

@@ -1,0 +1,1084 @@
+{
+  "generated_at": "2026-10-10T02:03:43+00:00",
+  "version": "1.0.0",
+  "setup": {
+    "seeds": [
+      101,
+      102,
+      103,
+      104,
+      105
+    ],
+    "quick": false,
+    "n_assets": 48,
+    "hours": 8760,
+    "n_test_assets": 16,
+    "max_iter": 250,
+    "cv_folds": 4,
+    "max_false_alarms_per_asset_year": 0.5,
+    "config": {
+      "sim": {
+        "n_assets": 48,
+        "hours": 8760,
+        "start": "2025-01-01",
+        "test_fraction": 0.3333333333333333,
+        "mean_healthy_hours": 2600,
+        "weibull_shape": 1.6,
+        "sudden_fraction": 0.12,
+        "pm_interval_hours": 4380,
+        "sensor_fault_rate": 1.0
+      },
+      "labels": {
+        "horizon_h": 168,
+        "rul_cap_h": 720
+      },
+      "alerts": {
+        "debounce_h": 3,
+        "clear_h": 24,
+        "realert_h": 168,
+        "credit_window_h": 336,
+        "min_lead_h": 12,
+        "max_false_alarms_per_asset_year": 0.5
+      },
+      "costs": {
+        "lost_production_per_h": 2500.0,
+        "unplanned_repair_cost": 42000.0,
+        "unplanned_downtime_h": 48.0,
+        "planned_repair_cost": 14000.0,
+        "planned_downtime_h": 8.0,
+        "false_alarm_cost": 1800.0
+      },
+      "train": {
+        "train_stride_h": 3,
+        "cv_folds": 4,
+        "max_iter": 250,
+        "learning_rate": 0.05,
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 200,
+        "max_features": 0.5,
+        "l2_regularization": 2.0,
+        "rul_interval_coverage": 0.8,
+        "random_state": 7
+      }
+    }
+  },
+  "methods": {
+    "hybrid": "Sentinel hybrid (GBM + MSPC)",
+    "ml": "Gradient boosting only",
+    "mspc": "MSPC (PCA T\u00b2 / SPE)",
+    "iforest": "Isolation Forest",
+    "rule": "Alarm limits (ISO 10816 + RTD)"
+  },
+  "runs": [
+    {
+      "seed": 101,
+      "runtime_s": 81.5130723999464,
+      "data": {
+        "n_assets": 48,
+        "hours": 8760,
+        "n_test_assets": 16,
+        "failures": 94,
+        "failures_test": 32,
+        "asset_years_test": 16.0
+      },
+      "methods": {
+        "hybrid": {
+          "roc_auc": 0.8792064559211541,
+          "pr_auc": 0.5887815506069254,
+          "roc_auc_predictable": 0.9900461626019672,
+          "pr_auc_predictable": 0.7450318622405492,
+          "detection_rate_predictable": 1.0,
+          "caught": 24,
+          "failures": 32,
+          "caught_predictable": 24,
+          "predictable_failures": 24,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 252.0,
+          "savings_pct": 59.25925925925926,
+          "threshold": 0.11585446155854846
+        },
+        "ml": {
+          "roc_auc": 0.8642538879536612,
+          "pr_auc": 0.6047029651016249,
+          "roc_auc_predictable": 0.9901608618935362,
+          "pr_auc_predictable": 0.7724632150314744,
+          "detection_rate_predictable": 1.0,
+          "caught": 24,
+          "failures": 32,
+          "caught_predictable": 24,
+          "predictable_failures": 24,
+          "false_alarms": 1,
+          "false_alarms_per_asset_year": 0.0625,
+          "median_lead_h": 251.5,
+          "savings_pct": 59.22453703703704,
+          "threshold": 0.3117257014610838
+        },
+        "mspc": {
+          "roc_auc": 0.8700272432878968,
+          "pr_auc": 0.5862182405282188,
+          "roc_auc_predictable": 0.9881029986836124,
+          "pr_auc_predictable": 0.7509768675100899,
+          "detection_rate_predictable": 1.0,
+          "caught": 24,
+          "failures": 32,
+          "caught_predictable": 24,
+          "predictable_failures": 24,
+          "false_alarms": 6,
+          "false_alarms_per_asset_year": 0.375,
+          "median_lead_h": 222.0,
+          "savings_pct": 59.050925925925924,
+          "threshold": 4.148542289733878
+        },
+        "iforest": {
+          "roc_auc": 0.8703029058024246,
+          "pr_auc": 0.4896120434776949,
+          "roc_auc_predictable": 0.9850735148372702,
+          "pr_auc_predictable": 0.623101727452529,
+          "detection_rate_predictable": 0.9166666666666666,
+          "caught": 22,
+          "failures": 32,
+          "caught_predictable": 22,
+          "predictable_failures": 24,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 146.0,
+          "savings_pct": 54.32098765432099,
+          "threshold": 1.119417872616471
+        },
+        "rule": {
+          "roc_auc": 0.6638064536546041,
+          "pr_auc": 0.2175821849221981,
+          "roc_auc_predictable": 0.7065386467217663,
+          "pr_auc_predictable": 0.255085862630534,
+          "detection_rate_predictable": 0.3333333333333333,
+          "caught": 8,
+          "failures": 32,
+          "caught_predictable": 8,
+          "predictable_failures": 24,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 55.0,
+          "savings_pct": 19.753086419753085,
+          "threshold": 1.0
+        }
+      },
+      "rul": {
+        "mae_h": 87.07028450989678,
+        "coverage_p10_p90": 0.7879464285714286,
+        "n_rows": 4032
+      },
+      "diagnosis": {
+        "event_accuracy": 0.9166666666666666,
+        "n_events": 24
+      }
+    },
+    {
+      "seed": 102,
+      "runtime_s": 81.4329476999701,
+      "data": {
+        "n_assets": 48,
+        "hours": 8760,
+        "n_test_assets": 16,
+        "failures": 97,
+        "failures_test": 31,
+        "asset_years_test": 16.0
+      },
+      "methods": {
+        "hybrid": {
+          "roc_auc": 0.8344540871499327,
+          "pr_auc": 0.5696170877083018,
+          "roc_auc_predictable": 0.9886902340175076,
+          "pr_auc_predictable": 0.7475453325206055,
+          "detection_rate_predictable": 1.0,
+          "caught": 23,
+          "failures": 31,
+          "caught_predictable": 23,
+          "predictable_failures": 23,
+          "false_alarms": 1,
+          "false_alarms_per_asset_year": 0.0625,
+          "median_lead_h": 356.0,
+          "savings_pct": 58.586220629231384,
+          "threshold": 0.1792356826640098
+        },
+        "ml": {
+          "roc_auc": 0.8365625227310209,
+          "pr_auc": 0.5776713345243224,
+          "roc_auc_predictable": 0.9901259061607414,
+          "pr_auc_predictable": 0.7592835814891196,
+          "detection_rate_predictable": 1.0,
+          "caught": 23,
+          "failures": 31,
+          "caught_predictable": 23,
+          "predictable_failures": 23,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 277.0,
+          "savings_pct": 58.622062923138195,
+          "threshold": 0.22475333935132724
+        },
+        "mspc": {
+          "roc_auc": 0.8277632643449122,
+          "pr_auc": 0.548033435356733,
+          "roc_auc_predictable": 0.9856150079491162,
+          "pr_auc_predictable": 0.7189878570522444,
+          "detection_rate_predictable": 1.0,
+          "caught": 23,
+          "failures": 31,
+          "caught_predictable": 23,
+          "predictable_failures": 23,
+          "false_alarms": 2,
+          "false_alarms_per_asset_year": 0.125,
+          "median_lead_h": 253.0,
+          "savings_pct": 58.550378335324574,
+          "threshold": 2.837331409454339
+        },
+        "iforest": {
+          "roc_auc": 0.8235810851008645,
+          "pr_auc": 0.4135659477915796,
+          "roc_auc_predictable": 0.9766186523252454,
+          "pr_auc_predictable": 0.5348659996464612,
+          "detection_rate_predictable": 0.9565217391304348,
+          "caught": 22,
+          "failures": 31,
+          "caught_predictable": 22,
+          "predictable_failures": 23,
+          "false_alarms": 6,
+          "false_alarms_per_asset_year": 0.375,
+          "median_lead_h": 206.0,
+          "savings_pct": 55.858223815213066,
+          "threshold": 1.0288174038472053
+        },
+        "rule": {
+          "roc_auc": 0.6949622704717849,
+          "pr_auc": 0.26003397720482613,
+          "roc_auc_predictable": 0.7532643324002593,
+          "pr_auc_predictable": 0.31575146315010255,
+          "detection_rate_predictable": 0.34782608695652173,
+          "caught": 8,
+          "failures": 31,
+          "caught_predictable": 8,
+          "predictable_failures": 23,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 63.0,
+          "savings_pct": 20.390282755874154,
+          "threshold": 1.0
+        }
+      },
+      "rul": {
+        "mae_h": 59.272347683123684,
+        "coverage_p10_p90": 0.8517936632626342,
+        "n_rows": 3819
+      },
+      "diagnosis": {
+        "event_accuracy": 0.9130434782608695,
+        "n_events": 23
+      }
+    },
+    {
+      "seed": 103,
+      "runtime_s": 72.17796060000546,
+      "data": {
+        "n_assets": 48,
+        "hours": 8760,
+        "n_test_assets": 16,
+        "failures": 90,
+        "failures_test": 28,
+        "asset_years_test": 16.0
+      },
+      "methods": {
+        "hybrid": {
+          "roc_auc": 0.9611796728776317,
+          "pr_auc": 0.6668245844031278,
+          "roc_auc_predictable": 0.9872119690322771,
+          "pr_auc_predictable": 0.7090447047487252,
+          "detection_rate_predictable": 1.0,
+          "caught": 26,
+          "failures": 28,
+          "caught_predictable": 26,
+          "predictable_failures": 26,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 253.5,
+          "savings_pct": 73.36860670194004,
+          "threshold": 0.15896753703098268
+        },
+        "ml": {
+          "roc_auc": 0.9702625160079088,
+          "pr_auc": 0.7397929415516162,
+          "roc_auc_predictable": 0.9878694382687443,
+          "pr_auc_predictable": 0.7877153796275245,
+          "detection_rate_predictable": 1.0,
+          "caught": 26,
+          "failures": 28,
+          "caught_predictable": 26,
+          "predictable_failures": 26,
+          "false_alarms": 9,
+          "false_alarms_per_asset_year": 0.5625,
+          "median_lead_h": 243.5,
+          "savings_pct": 73.01146384479718,
+          "threshold": 0.08337414318567264
+        },
+        "mspc": {
+          "roc_auc": 0.9525521091144789,
+          "pr_auc": 0.6414284479278616,
+          "roc_auc_predictable": 0.9874509716201987,
+          "pr_auc_predictable": 0.6848078757321434,
+          "detection_rate_predictable": 1.0,
+          "caught": 26,
+          "failures": 28,
+          "caught_predictable": 26,
+          "predictable_failures": 26,
+          "false_alarms": 3,
+          "false_alarms_per_asset_year": 0.1875,
+          "median_lead_h": 249.5,
+          "savings_pct": 73.24955908289242,
+          "threshold": 2.000228059291846
+        },
+        "iforest": {
+          "roc_auc": 0.9431563486616978,
+          "pr_auc": 0.4626222960509334,
+          "roc_auc_predictable": 0.9810074971220538,
+          "pr_auc_predictable": 0.4930328963258511,
+          "detection_rate_predictable": 0.9615384615384616,
+          "caught": 25,
+          "failures": 28,
+          "caught_predictable": 25,
+          "predictable_failures": 26,
+          "false_alarms": 1,
+          "false_alarms_per_asset_year": 0.0625,
+          "median_lead_h": 147.0,
+          "savings_pct": 70.50705467372134,
+          "threshold": 1.0420329625569795
+        },
+        "rule": {
+          "roc_auc": 0.7291080622007526,
+          "pr_auc": 0.2138283648422919,
+          "roc_auc_predictable": 0.7231488099121929,
+          "pr_auc_predictable": 0.21799931421949173,
+          "detection_rate_predictable": 0.3076923076923077,
+          "caught": 8,
+          "failures": 28,
+          "caught_predictable": 8,
+          "predictable_failures": 26,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 45.5,
+          "savings_pct": 22.57495590828924,
+          "threshold": 1.0
+        }
+      },
+      "rul": {
+        "mae_h": 78.13567632329433,
+        "coverage_p10_p90": 0.9331625523986958,
+        "n_rows": 4294
+      },
+      "diagnosis": {
+        "event_accuracy": 1.0,
+        "n_events": 26
+      }
+    },
+    {
+      "seed": 104,
+      "runtime_s": 72.02622909995262,
+      "data": {
+        "n_assets": 48,
+        "hours": 8760,
+        "n_test_assets": 16,
+        "failures": 88,
+        "failures_test": 29,
+        "asset_years_test": 16.0
+      },
+      "methods": {
+        "hybrid": {
+          "roc_auc": 0.9623911924794657,
+          "pr_auc": 0.6987072374557981,
+          "roc_auc_predictable": 0.9899389851054738,
+          "pr_auc_predictable": 0.766023295317271,
+          "detection_rate_predictable": 1.0,
+          "caught": 26,
+          "failures": 29,
+          "caught_predictable": 26,
+          "predictable_failures": 26,
+          "false_alarms": 1,
+          "false_alarms_per_asset_year": 0.0625,
+          "median_lead_h": 299.5,
+          "savings_pct": 70.80034057045552,
+          "threshold": 0.14648987243676637
+        },
+        "ml": {
+          "roc_auc": 0.9568546828896768,
+          "pr_auc": 0.6555716025886789,
+          "roc_auc_predictable": 0.9905473042049495,
+          "pr_auc_predictable": 0.7200991200223236,
+          "detection_rate_predictable": 1.0,
+          "caught": 26,
+          "failures": 29,
+          "caught_predictable": 26,
+          "predictable_failures": 26,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 231.5,
+          "savings_pct": 70.83865474670073,
+          "threshold": 0.21905931964338957
+        },
+        "mspc": {
+          "roc_auc": 0.9560497237893862,
+          "pr_auc": 0.719878062589604,
+          "roc_auc_predictable": 0.9885701742323453,
+          "pr_auc_predictable": 0.791394833759331,
+          "detection_rate_predictable": 1.0,
+          "caught": 26,
+          "failures": 29,
+          "caught_predictable": 26,
+          "predictable_failures": 26,
+          "false_alarms": 3,
+          "false_alarms_per_asset_year": 0.1875,
+          "median_lead_h": 223.5,
+          "savings_pct": 70.72371221796509,
+          "threshold": 6.832495272159576
+        },
+        "iforest": {
+          "roc_auc": 0.9489622210505116,
+          "pr_auc": 0.5598282265035087,
+          "roc_auc_predictable": 0.98021962861144,
+          "pr_auc_predictable": 0.612508913062595,
+          "detection_rate_predictable": 1.0,
+          "caught": 26,
+          "failures": 29,
+          "caught_predictable": 26,
+          "predictable_failures": 26,
+          "false_alarms": 28,
+          "false_alarms_per_asset_year": 1.75,
+          "median_lead_h": 301.5,
+          "savings_pct": 69.76585781183482,
+          "threshold": 1.063681939292469
+        },
+        "rule": {
+          "roc_auc": 0.7126430016745807,
+          "pr_auc": 0.3464598044220438,
+          "roc_auc_predictable": 0.7394072609346074,
+          "pr_auc_predictable": 0.37494121441787426,
+          "detection_rate_predictable": 0.4230769230769231,
+          "caught": 11,
+          "failures": 29,
+          "caught_predictable": 11,
+          "predictable_failures": 26,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 84.0,
+          "savings_pct": 29.970200085142615,
+          "threshold": 1.0
+        }
+      },
+      "rul": {
+        "mae_h": 68.96841756667814,
+        "coverage_p10_p90": 0.8307050092764379,
+        "n_rows": 4312
+      },
+      "diagnosis": {
+        "event_accuracy": 0.8846153846153846,
+        "n_events": 26
+      }
+    },
+    {
+      "seed": 105,
+      "runtime_s": 72.5256715999567,
+      "data": {
+        "n_assets": 48,
+        "hours": 8760,
+        "n_test_assets": 16,
+        "failures": 98,
+        "failures_test": 30,
+        "asset_years_test": 16.0
+      },
+      "methods": {
+        "hybrid": {
+          "roc_auc": 0.9087135213639078,
+          "pr_auc": 0.6548227540474121,
+          "roc_auc_predictable": 0.9841819919565152,
+          "pr_auc_predictable": 0.7690326908860698,
+          "detection_rate_predictable": 1.0,
+          "caught": 25,
+          "failures": 30,
+          "caught_predictable": 25,
+          "predictable_failures": 25,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 246.0,
+          "savings_pct": 65.84362139917695,
+          "threshold": 0.09297869836308938
+        },
+        "ml": {
+          "roc_auc": 0.9287073252640157,
+          "pr_auc": 0.6745422654705955,
+          "roc_auc_predictable": 0.9726347553432438,
+          "pr_auc_predictable": 0.7779212420654998,
+          "detection_rate_predictable": 0.84,
+          "caught": 21,
+          "failures": 30,
+          "caught_predictable": 21,
+          "predictable_failures": 25,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 190.0,
+          "savings_pct": 55.30864197530864,
+          "threshold": 0.26854604298569545
+        },
+        "mspc": {
+          "roc_auc": 0.8992247520367209,
+          "pr_auc": 0.623378041502358,
+          "roc_auc_predictable": 0.9912157127886836,
+          "pr_auc_predictable": 0.7356739456722735,
+          "detection_rate_predictable": 1.0,
+          "caught": 25,
+          "failures": 30,
+          "caught_predictable": 25,
+          "predictable_failures": 25,
+          "false_alarms": 1,
+          "false_alarms_per_asset_year": 0.0625,
+          "median_lead_h": 233.0,
+          "savings_pct": 65.80658436213992,
+          "threshold": 3.9870525264739944
+        },
+        "iforest": {
+          "roc_auc": 0.8987525145893491,
+          "pr_auc": 0.4933418467960955,
+          "roc_auc_predictable": 0.9826363138434886,
+          "pr_auc_predictable": 0.5783300902043764,
+          "detection_rate_predictable": 0.88,
+          "caught": 22,
+          "failures": 30,
+          "caught_predictable": 22,
+          "predictable_failures": 25,
+          "false_alarms": 1,
+          "false_alarms_per_asset_year": 0.0625,
+          "median_lead_h": 175.0,
+          "savings_pct": 57.90534979423868,
+          "threshold": 1.037386613944501
+        },
+        "rule": {
+          "roc_auc": 0.7029074548505811,
+          "pr_auc": 0.2393338253435795,
+          "roc_auc_predictable": 0.7531549665425619,
+          "pr_auc_predictable": 0.27286646798087916,
+          "detection_rate_predictable": 0.32,
+          "caught": 8,
+          "failures": 30,
+          "caught_predictable": 8,
+          "predictable_failures": 25,
+          "false_alarms": 0,
+          "false_alarms_per_asset_year": 0.0,
+          "median_lead_h": 74.0,
+          "savings_pct": 21.069958847736626,
+          "threshold": 1.0
+        }
+      },
+      "rul": {
+        "mae_h": 98.3199709295286,
+        "coverage_p10_p90": 0.7782859894077997,
+        "n_rows": 4154
+      },
+      "diagnosis": {
+        "event_accuracy": 0.8,
+        "n_events": 25
+      }
+    }
+  ],
+  "aggregate": {
+    "methods": {
+      "hybrid": {
+        "detection_rate_predictable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 5
+        },
+        "false_alarms_per_asset_year": {
+          "mean": 0.025,
+          "std": 0.03423265984407289,
+          "min": 0.0,
+          "max": 0.0625,
+          "n": 5
+        },
+        "median_lead_h": {
+          "mean": 281.4,
+          "std": 46.87403332336572,
+          "min": 246.0,
+          "max": 356.0,
+          "n": 5
+        },
+        "savings_pct": {
+          "mean": 65.57160971201263,
+          "std": 6.649214383766308,
+          "min": 58.586220629231384,
+          "max": 73.36860670194004,
+          "n": 5
+        },
+        "roc_auc": {
+          "mean": 0.9091889859584186,
+          "std": 0.05481329578434987,
+          "min": 0.8344540871499327,
+          "max": 0.9623911924794657,
+          "n": 5
+        },
+        "pr_auc": {
+          "mean": 0.635750642844313,
+          "std": 0.05448075535303946,
+          "min": 0.5696170877083018,
+          "max": 0.6987072374557981,
+          "n": 5
+        },
+        "roc_auc_predictable": {
+          "mean": 0.9880138685427482,
+          "std": 0.0024300249060286417,
+          "min": 0.9841819919565152,
+          "max": 0.9900461626019672,
+          "n": 5
+        },
+        "pr_auc_predictable": {
+          "mean": 0.7473355771426442,
+          "std": 0.023935003466291453,
+          "min": 0.7090447047487252,
+          "max": 0.7690326908860698,
+          "n": 5
+        },
+        "caught": {
+          "mean": 24.8,
+          "std": 1.3038404810405297,
+          "min": 23.0,
+          "max": 26.0,
+          "n": 5
+        },
+        "failures": {
+          "mean": 30.0,
+          "std": 1.5811388300841898,
+          "min": 28.0,
+          "max": 32.0,
+          "n": 5
+        },
+        "false_alarms": {
+          "mean": 0.4,
+          "std": 0.5477225575051662,
+          "min": 0.0,
+          "max": 1.0,
+          "n": 5
+        }
+      },
+      "ml": {
+        "detection_rate_predictable": {
+          "mean": 0.968,
+          "std": 0.07155417527999328,
+          "min": 0.84,
+          "max": 1.0,
+          "n": 5
+        },
+        "false_alarms_per_asset_year": {
+          "mean": 0.125,
+          "std": 0.2460627460628691,
+          "min": 0.0,
+          "max": 0.5625,
+          "n": 5
+        },
+        "median_lead_h": {
+          "mean": 238.7,
+          "std": 31.926869561546432,
+          "min": 190.0,
+          "max": 277.0,
+          "n": 5
+        },
+        "savings_pct": {
+          "mean": 63.40107210539636,
+          "std": 7.960010431567759,
+          "min": 55.30864197530864,
+          "max": 73.01146384479718,
+          "n": 5
+        },
+        "roc_auc": {
+          "mean": 0.9113281869692565,
+          "std": 0.058424835461237716,
+          "min": 0.8365625227310209,
+          "max": 0.9702625160079088,
+          "n": 5
+        },
+        "pr_auc": {
+          "mean": 0.6504562218473676,
+          "std": 0.06320275791161002,
+          "min": 0.5776713345243224,
+          "max": 0.7397929415516162,
+          "n": 5
+        },
+        "roc_auc_predictable": {
+          "mean": 0.986267653174243,
+          "std": 0.007693832301653384,
+          "min": 0.9726347553432438,
+          "max": 0.9905473042049495,
+          "n": 5
+        },
+        "pr_auc_predictable": {
+          "mean": 0.7634965076471883,
+          "std": 0.026344404357615717,
+          "min": 0.7200991200223236,
+          "max": 0.7877153796275245,
+          "n": 5
+        },
+        "caught": {
+          "mean": 24.0,
+          "std": 2.1213203435596424,
+          "min": 21.0,
+          "max": 26.0,
+          "n": 5
+        },
+        "failures": {
+          "mean": 30.0,
+          "std": 1.5811388300841898,
+          "min": 28.0,
+          "max": 32.0,
+          "n": 5
+        },
+        "false_alarms": {
+          "mean": 2.0,
+          "std": 3.9370039370059056,
+          "min": 0.0,
+          "max": 9.0,
+          "n": 5
+        }
+      },
+      "mspc": {
+        "detection_rate_predictable": {
+          "mean": 1.0,
+          "std": 0.0,
+          "min": 1.0,
+          "max": 1.0,
+          "n": 5
+        },
+        "false_alarms_per_asset_year": {
+          "mean": 0.1875,
+          "std": 0.11692679333668567,
+          "min": 0.0625,
+          "max": 0.375,
+          "n": 5
+        },
+        "median_lead_h": {
+          "mean": 236.2,
+          "std": 14.424805024678843,
+          "min": 222.0,
+          "max": 253.0,
+          "n": 5
+        },
+        "savings_pct": {
+          "mean": 65.47623198484959,
+          "std": 6.6581116389853054,
+          "min": 58.550378335324574,
+          "max": 73.24955908289242,
+          "n": 5
+        },
+        "roc_auc": {
+          "mean": 0.901123418514679,
+          "std": 0.05480442157317576,
+          "min": 0.8277632643449122,
+          "max": 0.9560497237893862,
+          "n": 5
+        },
+        "pr_auc": {
+          "mean": 0.6237872455809551,
+          "std": 0.06460436224774621,
+          "min": 0.548033435356733,
+          "max": 0.719878062589604,
+          "n": 5
+        },
+        "roc_auc_predictable": {
+          "mean": 0.9881909730547912,
+          "std": 0.0020300111963782678,
+          "min": 0.9856150079491162,
+          "max": 0.9912157127886836,
+          "n": 5
+        },
+        "pr_auc_predictable": {
+          "mean": 0.7363682759452164,
+          "std": 0.039377560037205016,
+          "min": 0.6848078757321434,
+          "max": 0.791394833759331,
+          "n": 5
+        },
+        "caught": {
+          "mean": 24.8,
+          "std": 1.3038404810405297,
+          "min": 23.0,
+          "max": 26.0,
+          "n": 5
+        },
+        "failures": {
+          "mean": 30.0,
+          "std": 1.5811388300841898,
+          "min": 28.0,
+          "max": 32.0,
+          "n": 5
+        },
+        "false_alarms": {
+          "mean": 3.0,
+          "std": 1.8708286933869707,
+          "min": 1.0,
+          "max": 6.0,
+          "n": 5
+        }
+      },
+      "iforest": {
+        "detection_rate_predictable": {
+          "mean": 0.9429453734671126,
+          "std": 0.045929134298064334,
+          "min": 0.88,
+          "max": 1.0,
+          "n": 5
+        },
+        "false_alarms_per_asset_year": {
+          "mean": 0.45,
+          "std": 0.7413564426104355,
+          "min": 0.0,
+          "max": 1.75,
+          "n": 5
+        },
+        "median_lead_h": {
+          "mean": 195.1,
+          "std": 64.35876008749703,
+          "min": 146.0,
+          "max": 301.5,
+          "n": 5
+        },
+        "savings_pct": {
+          "mean": 61.67149474986578,
+          "std": 7.83571556871386,
+          "min": 54.32098765432099,
+          "max": 70.50705467372134,
+          "n": 5
+        },
+        "roc_auc": {
+          "mean": 0.8969510150409695,
+          "std": 0.052289129251685745,
+          "min": 0.8235810851008645,
+          "max": 0.9489622210505116,
+          "n": 5
+        },
+        "pr_auc": {
+          "mean": 0.4837940721239624,
+          "std": 0.05311881722470498,
+          "min": 0.4135659477915796,
+          "max": 0.5598282265035087,
+          "n": 5
+        },
+        "roc_auc_predictable": {
+          "mean": 0.9811111213478995,
+          "std": 0.0031230813915129616,
+          "min": 0.9766186523252454,
+          "max": 0.9850735148372702,
+          "n": 5
+        },
+        "pr_auc_predictable": {
+          "mean": 0.5683679253383624,
+          "std": 0.0544086533589622,
+          "min": 0.4930328963258511,
+          "max": 0.623101727452529,
+          "n": 5
+        },
+        "caught": {
+          "mean": 23.4,
+          "std": 1.949358868961793,
+          "min": 22.0,
+          "max": 26.0,
+          "n": 5
+        },
+        "failures": {
+          "mean": 30.0,
+          "std": 1.5811388300841898,
+          "min": 28.0,
+          "max": 32.0,
+          "n": 5
+        },
+        "false_alarms": {
+          "mean": 7.2,
+          "std": 11.861703081766969,
+          "min": 0.0,
+          "max": 28.0,
+          "n": 5
+        }
+      },
+      "rule": {
+        "detection_rate_predictable": {
+          "mean": 0.3463857302118172,
+          "std": 0.04540750615256916,
+          "min": 0.3076923076923077,
+          "max": 0.4230769230769231,
+          "n": 5
+        },
+        "false_alarms_per_asset_year": {
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "n": 5
+        },
+        "median_lead_h": {
+          "mean": 64.3,
+          "std": 15.197039185315013,
+          "min": 45.5,
+          "max": 84.0,
+          "n": 5
+        },
+        "savings_pct": {
+          "mean": 22.751696803359145,
+          "std": 4.1693587654704105,
+          "min": 19.753086419753085,
+          "max": 29.970200085142615,
+          "n": 5
+        },
+        "roc_auc": {
+          "mean": 0.7006854485704608,
+          "std": 0.02423107708747457,
+          "min": 0.6638064536546041,
+          "max": 0.7291080622007526,
+          "n": 5
+        },
+        "pr_auc": {
+          "mean": 0.2554476313469879,
+          "std": 0.05415223988309408,
+          "min": 0.2138283648422919,
+          "max": 0.3464598044220438,
+          "n": 5
+        },
+        "roc_auc_predictable": {
+          "mean": 0.7351028033022775,
+          "std": 0.02020556291881883,
+          "min": 0.7065386467217663,
+          "max": 0.7532643324002593,
+          "n": 5
+        },
+        "pr_auc_predictable": {
+          "mean": 0.28732886447977635,
+          "std": 0.06028915034416442,
+          "min": 0.21799931421949173,
+          "max": 0.37494121441787426,
+          "n": 5
+        },
+        "caught": {
+          "mean": 8.6,
+          "std": 1.3416407864998738,
+          "min": 8.0,
+          "max": 11.0,
+          "n": 5
+        },
+        "failures": {
+          "mean": 30.0,
+          "std": 1.5811388300841898,
+          "min": 28.0,
+          "max": 32.0,
+          "n": 5
+        },
+        "false_alarms": {
+          "mean": 0.0,
+          "std": 0.0,
+          "min": 0.0,
+          "max": 0.0,
+          "n": 5
+        }
+      }
+    },
+    "pooled": {
+      "hybrid": {
+        "caught": 124,
+        "failures": 150,
+        "caught_predictable": 124,
+        "predictable_failures": 124,
+        "false_alarms": 2,
+        "asset_years": 80.0,
+        "detection_rate": 0.8266666666666667,
+        "detection_rate_predictable": 1.0,
+        "false_alarms_per_asset_year": 0.025
+      },
+      "ml": {
+        "caught": 120,
+        "failures": 150,
+        "caught_predictable": 120,
+        "predictable_failures": 124,
+        "false_alarms": 10,
+        "asset_years": 80.0,
+        "detection_rate": 0.8,
+        "detection_rate_predictable": 0.967741935483871,
+        "false_alarms_per_asset_year": 0.125
+      },
+      "mspc": {
+        "caught": 124,
+        "failures": 150,
+        "caught_predictable": 124,
+        "predictable_failures": 124,
+        "false_alarms": 15,
+        "asset_years": 80.0,
+        "detection_rate": 0.8266666666666667,
+        "detection_rate_predictable": 1.0,
+        "false_alarms_per_asset_year": 0.1875
+      },
+      "iforest": {
+        "caught": 117,
+        "failures": 150,
+        "caught_predictable": 117,
+        "predictable_failures": 124,
+        "false_alarms": 36,
+        "asset_years": 80.0,
+        "detection_rate": 0.78,
+        "detection_rate_predictable": 0.9435483870967742,
+        "false_alarms_per_asset_year": 0.45
+      },
+      "rule": {
+        "caught": 43,
+        "failures": 150,
+        "caught_predictable": 43,
+        "predictable_failures": 124,
+        "false_alarms": 0,
+        "asset_years": 80.0,
+        "detection_rate": 0.2866666666666667,
+        "detection_rate_predictable": 0.3467741935483871,
+        "false_alarms_per_asset_year": 0.0
+      }
+    },
+    "rul": {
+      "mae_h": {
+        "mean": 78.3533394025043,
+        "std": 15.222186822340472,
+        "min": 59.272347683123684,
+        "max": 98.3199709295286,
+        "n": 5
+      },
+      "coverage_p10_p90": {
+        "mean": 0.8363787285833993,
+        "std": 0.06196243596652613,
+        "min": 0.7782859894077997,
+        "max": 0.9331625523986958,
+        "n": 5
+      }
+    },
+    "diagnosis": {
+      "event_accuracy": {
+        "mean": 0.9028651059085842,
+        "std": 0.0718393212908416,
+        "min": 0.8,
+        "max": 1.0,
+        "n": 5
+      }
+    },
+    "failures_test": {
+      "mean": 30.0,
+      "std": 1.5811388300841898,
+      "min": 28.0,
+      "max": 32.0,
+      "n": 5
+    }
+  },
+  "runtime_s": 379.6781675000093,
+  "environment": {
+    "python": "3.12.10",
+    "sklearn": "1.9.1",
+    "pandas": "3.0.6",
+    "numpy": "2.5.3"
+  }
+}

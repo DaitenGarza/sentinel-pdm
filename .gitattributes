@@ -1,0 +1,18 @@
+# Normalise line endings: text files are stored with LF in the repository.
+* text=auto
+
+# Windows batch files must keep CRLF on checkout: cmd.exe misreads labels and
+# multi-line blocks in LF-only .bat files.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Shell scripts must keep LF everywhere, or bash fails with "$'\r': command not found".
+*.sh text eol=lf
+
+# Binary artifacts, never diffed or converted.
+*.parquet binary
+*.joblib binary
+*.png binary
+*.jpg binary
+*.gif binary
+*.ico binary

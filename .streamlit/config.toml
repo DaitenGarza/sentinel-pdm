@@ -1,0 +1,18 @@
+[theme]
+base = "dark"
+primaryColor = "#f59e0b"
+backgroundColor = "#0f1117"
+secondaryBackgroundColor = "#1a1d27"
+textColor = "#e5e7eb"
+
+[client]
+# The dashboard is an operator tool, not an app under development: hide Deploy / Rerun /
+# Clear cache from the toolbar (print and theme options stay).
+toolbarMode = "viewer"
+
+[browser]
+gatherUsageStats = false
+
+[server]
+headless = true
+runOnSave = false
