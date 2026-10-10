@@ -24,7 +24,7 @@ if _SRC.exists() and str(_SRC) not in sys.path:
 
 from sentinel_pdm.config import ARTIFACTS_DIR, DATA_DIR, FAILURE_MODES, ISO_ZONE_LIMITS  # noqa: E402
 from sentinel_pdm.explain import (  # noqa: E402
-    MODE_LABELS, SIGNAL_INFO, STATUS_COLORS, STATUS_ORDER, asset_status, recommendation, top_drivers,
+    MODE_LABELS, SIGNAL_INFO, STATUS_COLORS, STATUS_ORDER, asset_status, fmt_sigma, recommendation, top_drivers,
 )
 
 APP_NAME = "Sentinel PdM"
@@ -217,7 +217,7 @@ def fleet_snapshot(hour: int | None = None) -> pd.DataFrame:
 
 def drivers_text(row: pd.Series | dict, n: int = 3) -> str:
     items = top_drivers(row, n=n)
-    return "; ".join(f"{d['label']} {d['z']:+.1f}σ" for d in items) if items else "-"
+    return "; ".join(f"{d['label']} {fmt_sigma(d['z'])}" for d in items) if items else "-"
 
 
 # --------------------------------------------------------------------------------------------
@@ -289,7 +289,7 @@ def zscore_figure(z: pd.Series, title: str, clip: float = Z_CLIP, height: int | 
     # from shrinking inside labels to the bar thickness.
     fig = go.Figure(go.Bar(
         x=np.clip(vals, -clip, clip), y=labels, orientation="h", marker_color=colors,
-        text=[f"{v:+.0f}σ" if abs(v) >= 100 else f"{v:+.1f}σ" for v in vals],
+        text=[fmt_sigma(v) for v in vals],
         textposition=["inside" if abs(v) >= 0.6 * clip else "outside" for v in vals], insidetextanchor="end",
         constraintext="none", insidetextfont=dict(color="#ffffff"), cliponaxis=False, customdata=vals,
         hovertemplate="%{y}: %{customdata:+.1f}σ<extra></extra>",
@@ -307,7 +307,7 @@ def zscore_figure(z: pd.Series, title: str, clip: float = Z_CLIP, height: int | 
 __all__ = [
     "ACCENT", "APP_NAME", "FAILURE_MODES", "ISO_ZONE_LIMITS", "METHOD_COLORS", "MODE_COLORS", "MODE_LABELS",
     "MODE_SHORT", "SIGNAL_INFO", "STATUS_COLORS", "STATUS_ORDER", "Z_CLIP", "artifacts_ready", "asset_status",
-    "drivers_text", "fleet_snapshot", "fmt_hours", "fmt_money", "fmt_pct", "hour_to_timestamp", "load_alerts",
+    "drivers_text", "fleet_snapshot", "fmt_hours", "fmt_sigma", "fmt_money", "fmt_pct", "hour_to_timestamp", "load_alerts",
     "load_assets", "load_clean", "load_events", "load_failure_outcomes", "load_feature_importance", "load_metrics",
     "load_model_bundle", "load_predictions", "load_quality", "load_readings", "load_threshold_curve",
     "page_setup", "recommendation", "require_artifacts", "status_badge", "style_fig", "zscore_figure",

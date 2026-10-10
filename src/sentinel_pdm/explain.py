@@ -106,6 +106,27 @@ def driver_zscores(features: pd.DataFrame, ref: pd.DataFrame) -> pd.DataFrame:
     return pd.DataFrame(out, index=features.index)
 
 
+SIGMA_DISPLAY_CAP = 20.0
+
+
+def fmt_sigma(z: float, signed: bool = True) -> str:
+    """Format a robust z-score for people.
+
+    A pump's healthy baseline can be very tight (a bearing band that normally moves by 2 %), so a
+    developing defect easily scores +150 sigma. That number is correct but reads like a glitch;
+    beyond 20 sigma the only useful message is "far outside normal", so the display is capped.
+    """
+    if not np.isfinite(z):
+        return "-"
+    a = abs(z)
+    if a >= SIGMA_DISPLAY_CAP:
+        if not signed:
+            return f">{SIGMA_DISPLAY_CAP:.0f}σ"
+        return f">+{SIGMA_DISPLAY_CAP:.0f}σ" if z > 0 else f"<-{SIGMA_DISPLAY_CAP:.0f}σ"
+    sign = ("+" if z > 0 else "-") if signed else ""
+    return f"{sign}{a:.1f}σ"
+
+
 def top_drivers(zrow: pd.Series | dict, n: int = 3, min_abs_z: float = 2.0) -> list[dict]:
     """Largest |z| signals for one row. Returns dicts with signal, label, unit, z and a sentence."""
     items = []
@@ -115,8 +136,9 @@ def top_drivers(zrow: pd.Series | dict, n: int = 3, min_abs_z: float = 2.0) -> l
             continue
         label, unit = SIGNAL_INFO[s]
         direction = "above" if z > 0 else "below"
+        size = f"more than {SIGMA_DISPLAY_CAP:.0f}σ" if abs(z) >= SIGMA_DISPLAY_CAP else f"{abs(z):.1f}σ"
         items.append({"signal": s, "label": label, "unit": unit, "z": float(z),
-                      "text": f"{label} is {abs(z):.1f}σ {direction} its healthy baseline"})
+                      "text": f"{label} is {size} {direction} its healthy baseline"})
     items.sort(key=lambda d: -abs(d["z"]))
     return items[:n]
 
