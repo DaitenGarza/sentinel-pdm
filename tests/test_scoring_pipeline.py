@@ -120,7 +120,9 @@ def test_predictions_cover_every_pump_hour(pipeline_run, predictions):
     n_assets, hours = pipeline_run.cfg.sim.n_assets, pipeline_run.cfg.sim.hours
     assert len(predictions) == n_assets * hours
     assert predictions.groupby("asset_id")["hour"].apply(lambda h: h.tolist() == list(range(hours))).all()
-    assert all(predictions[c].dtype == np.float32 for c in SERVED_FLOAT_COLUMNS)
+    full = ["risk", "risk_gbm"]        # calibrated probabilities keep float64 so their tie-break survives
+    assert all(predictions[c].dtype == np.float64 for c in full)
+    assert all(predictions[c].dtype == np.float32 for c in SERVED_FLOAT_COLUMNS if c not in full)
 
     running = predictions["running"].to_numpy() == 1
     test = predictions["split"].to_numpy() == "test"

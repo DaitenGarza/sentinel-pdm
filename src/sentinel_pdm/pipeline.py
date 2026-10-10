@@ -53,6 +53,7 @@ METHODS = {
 }
 SCORE_COLUMNS = {"hybrid": "risk", "ml": "risk_gbm", "mspc": "mspc_score", "iforest": "iforest_score",
                  "rule": "rule_score"}
+FULL_PRECISION_COLUMNS = ["risk", "risk_gbm"]
 
 
 def _clean_nans(obj):
@@ -250,7 +251,7 @@ def run_pipeline(
     t = step("evaluate", t)
 
     # 5. explainability -------------------------------------------------------------------------
-    imp = pd.DataFrame(columns=["feature", "signal", "importance", "std"])
+    imp = pd.DataFrame(columns=["feature", "importance", "std", "signal"])
     if importance:
         log("[7/7] Permutation importance on the test fleet...")
         sub = yte.sample(n=min(8000, len(yte)), random_state=cfg.train.random_state)
@@ -274,7 +275,10 @@ def run_pipeline(
         "test_assets": test_ids,
     }
     save_bundle(bundle, models_dir)
-    float_cols = preds.select_dtypes(include=["float64"]).columns
+    # float32 halves the file, but the two calibrated probabilities stay float64: their isotonic
+    # tie-break is ~1e-9 apart, below float32 resolution, and dropping it would re-create ties that
+    # change ROC / PR curves recomputed from this file (the dashboard does exactly that).
+    float_cols = preds.select_dtypes(include=["float64"]).columns.difference(FULL_PRECISION_COLUMNS)
     preds[float_cols] = preds[float_cols].astype(np.float32)
     preds.to_parquet(artifacts_dir / "predictions.parquet", index=False)
     pd.concat(all_alerts, ignore_index=True).to_csv(artifacts_dir / "alerts.csv", index=False)

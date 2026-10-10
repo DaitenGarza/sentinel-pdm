@@ -71,7 +71,7 @@ Same keys + `running`, context and sensor columns after causal cleaning (no `gt_
 
 ### `artifacts/predictions.parquet` (420,480 rows, one per pump-hour)
 Keys: `asset_id`, `hour`, `timestamp`, `split`, `running`.
-Scores (float32, NaN while stopped): `risk` (Sentinel hybrid P(failure within 7 d); drives alerts/status),
+Scores (float32, except `risk` and `risk_gbm` which are float64 so the calibration tie-break survives; NaN while stopped): `risk` (Sentinel hybrid P(failure within 7 d); drives alerts/status),
 `risk_gbm` (gradient boosting only), `rul_p10`, `rul_p50`, `rul_p90` (hours, conditional on a developing
 failure, capped at 720), `prob_bearing`, `prob_misalignment`, `prob_cavitation`, `prob_winding`,
 `mspc_score` (1.0 = 99 % control limit), `iforest_score`, `rule_score` (>= 1 means a conventional alarm limit
