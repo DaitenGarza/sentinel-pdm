@@ -1,6 +1,6 @@
 # Sentinel PdM: results
 
-_Generated 2026-10-10 01:07 UTC by `python -m sentinel_pdm report` (sentinel-pdm v1.0.0) from the training run of 2026-10-09 20:33 UTC (v1.0.0). Interactive figures: [model_report.html](model_report.html). Method: [docs/METHODOLOGY.md](../docs/METHODOLOGY.md). Limitations: [docs/MODEL_CARD.md](../docs/MODEL_CARD.md)._
+_Generated 2026-10-10 17:56 UTC by `python -m sentinel_pdm report` (sentinel-pdm v1.0.0) from the training run of 2026-10-10 17:56 UTC (v1.0.0). Interactive figures: [model_report.html](model_report.html). Method: [docs/METHODOLOGY.md](../docs/METHODOLOGY.md). Limitations: [docs/MODEL_CARD.md](../docs/MODEL_CARD.md)._
 
 ## Summary
 
@@ -81,16 +81,16 @@ Permutation importance of the gradient-boosting risk ensemble on test-fleet hour
 
 | # | Feature | Meaning | PR-AUC drop |
 | ---: | --- | --- | ---: |
-| 1 | `vib_hf_sl168` | High-frequency bearing band, 7-day trend | 0.0309 ± 0.0009 |
-| 2 | `current_imbalance_m168` | Phase current imbalance, 7-day mean | 0.0198 ± 0.0017 |
-| 3 | `vib_rms_sl168` | Overall vibration (RMS), 7-day trend | 0.0169 ± 0.0002 |
-| 4 | `suction_pressure_sl168` | Suction pressure, 7-day trend | 0.0139 ± 0.0012 |
-| 5 | `vib_kurtosis_dev` | Vibration kurtosis (impacting), deviation from baseline | 0.0092 ± 0.0009 |
-| 6 | `current_imbalance_dev` | Phase current imbalance, deviation from baseline | 0.0088 ± 0.0004 |
-| 7 | `vib_rms_dev` | Overall vibration (RMS), deviation from baseline | 0.0083 ± 0.0009 |
-| 8 | `vib_kurtosis_m24` | Vibration kurtosis (impacting), 24 h mean | 0.0082 ± 0.0008 |
-| 9 | `vib_hf_dev` | High-frequency bearing band, deviation from baseline | 0.0082 ± 0.0013 |
-| 10 | `vib_hf_sl24` | High-frequency bearing band, 24 h trend | 0.0081 ± 0.0002 |
+| 1 | `vib_hf_sl168` | High-frequency bearing band, 7-day trend | 0.0336 ± 0.0004 |
+| 2 | `vib_rms_sl168` | Overall vibration (RMS), 7-day trend | 0.0228 ± 0.0008 |
+| 3 | `current_imbalance_m168` | Phase current imbalance, 7-day mean | 0.0164 ± 0.0004 |
+| 4 | `suction_pressure_sl168` | Suction pressure, 7-day trend | 0.0146 ± 0.0001 |
+| 5 | `vib_kurtosis_dev` | Vibration kurtosis (impacting), deviation from baseline | 0.0119 ± 0.0004 |
+| 6 | `current_imbalance_dev` | Phase current imbalance, deviation from baseline | 0.0101 ± 0.0002 |
+| 7 | `vib_rms_dev` | Overall vibration (RMS), deviation from baseline | 0.0101 ± 0.0006 |
+| 8 | `vib_kurtosis_m24` | Vibration kurtosis (impacting), 24 h mean | 0.0097 ± 0.0004 |
+| 9 | `vib_kurtosis_sl168` | Vibration kurtosis (impacting), 7-day trend | 0.0088 ± 0.0010 |
+| 10 | `vib_hf_sl24` | High-frequency bearing band, 24 h trend | 0.0085 ± 0.0007 |
 
 ## Robustness across independent fleets
 
@@ -161,5 +161,5 @@ Simulated with a physics-informed fleet model; see [METHODOLOGY](../docs/METHODO
 ## Run details
 
 - Environment: Python 3.12.10, scikit-learn 1.9.1, pandas 3.0.6, numpy 2.5.3
-- Pipeline time: 133 s on CPU (simulate 1 s, clean 2 s, features 2 s, train 57 s, score 13 s, evaluate 1 s, importance 54 s)
-- Model version 1.0.0, trained 2026-10-09 20:33 UTC; report generated 2026-10-10 01:07 UTC
+- Pipeline time: 101 s on CPU (simulate 1 s, clean 2 s, features 2 s, train 57 s, score 13 s, evaluate 1 s, importance 23 s)
+- Model version 1.0.0, trained 2026-10-10 17:56 UTC; report generated 2026-10-10 17:56 UTC
