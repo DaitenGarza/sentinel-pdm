@@ -102,18 +102,20 @@ account or API key.
 1. Download the repository (**Code > Download ZIP**, then extract it) or clone it:
    `git clone https://github.com/DaitenGarza/sentinel-pdm.git`
 2. Double-click **`setup.bat`**. The first run takes about 5 minutes: it creates a virtual environment
-   and installs the packages, simulates the plant, trains and evaluates every model, and downloads the
-   AI4I dataset for the real-data benchmark. If Python is missing it offers to install it with winget.
+   and installs the packages (about 140 MB download, about 600 MB on disk), simulates the plant, trains
+   and evaluates every model, and downloads the AI4I dataset for the real-data benchmark. If Python is
+   missing it offers to install it with winget. Re-running it later also works offline.
 3. Double-click **`run.bat`**. The dashboard opens in your browser at http://localhost:8501 (or the
-   next free port). Close the window or press Ctrl+C to stop it.
+   next free port) after about 5 seconds. Close the window or press Ctrl+C to stop it.
 
-`run.bat` also works on its own: on a fresh copy it runs the setup first.
+`run.bat` also works on its own: on a fresh copy it runs the setup first. The dashboard listens on
+localhost only, so it never triggers a firewall prompt and is not reachable from other machines.
 
 ### macOS / Linux
 
 ```bash
-./setup.sh     # one-time: virtual environment, packages, training, AI4I benchmark
-./run.sh       # start the dashboard
+bash setup.sh     # one-time: virtual environment, packages, training, AI4I benchmark
+bash run.sh       # start the dashboard
 ```
 
 ### Manual
@@ -279,6 +281,8 @@ sentinel-pdm/
 │   ├── common.py                shared loaders, formatting and colours
 │   └── pages/                   the six other pages
 ├── tests/                       pytest suite
+├── scripts/
+│   └── refit_vs_ensemble.py     reproduces the CV-ensemble vs. refit comparison
 ├── docs/
 │   ├── ARCHITECTURE.md          module APIs and file schemas
 │   ├── METHODOLOGY.md           how it works and why, with full results

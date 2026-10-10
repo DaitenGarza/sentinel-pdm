@@ -483,10 +483,10 @@ The usual recipe is to tune on cross-validation and then refit one final model o
 data. Here that silently breaks the alarm budget. Alert thresholds, the isotonic calibration and the
 conformal offsets are all tuned on the OOF score distribution, but a model refitted on all 32 pumps
 (a third more data than any fold model) produces a different score distribution, so a threshold
-tuned on the OOF scores no longer means the same thing. A one-off check on the reference run shows
-the size of the effect: a single gradient-boosting model refitted on all 32 training pumps, put
-through the same OOF-fitted calibration and the same threshold, caught the same 26 test-fleet
-failures as the ensemble but raised **11 false alarms instead of 5**.
+tuned on the OOF scores no longer means the same thing. `python scripts/refit_vs_ensemble.py`
+measures the size of the effect on the reference run: a single gradient-boosting model refitted on
+all 32 training pumps, put through the same OOF-fitted calibration and the same threshold, caught the
+same 26 test-fleet failures as the ensemble but raised **11 false alarms instead of 5**.
 
 The fix is to keep the K fold models as a **cross-validation ensemble** and average them to score new
 pumps (risk, RUL, diagnosis, MSPC and Isolation Forest alike). Production then uses exactly the
@@ -729,8 +729,8 @@ Pooled counts weight every failure equally; ± is the standard deviation across 
   0.56 per pump-year, on seed 103) and Isolation Forest once (28 false alarms, 1.75 per pump-year,
   on seed 104). The hybrid, MSPC and the alarm limits stayed inside it on every fleet.
 * **The hybrid's advantage is in alerts, not in ranking hours.** Its row-level ROC-AUC
-  (0.909 ± 0.055) and PR-AUC (0.631 ± 0.054) are the same as gradient boosting's
-  (0.911 ± 0.058 and 0.649 ± 0.064). This is the argument of Section 7 in numbers: ranking hours
+  (0.909 ± 0.055) and PR-AUC (0.636 ± 0.054) are the same as gradient boosting's
+  (0.911 ± 0.058 and 0.650 ± 0.063). This is the argument of Section 7 in numbers: ranking hours
   well and raising few nuisance alerts are different things.
 * **Conventional alarm limits** caught 43 of 124 predictable failures (34.7 %) with a median warning
   of 64 ± 15 h, against 281 ± 47 h for the hybrid.
