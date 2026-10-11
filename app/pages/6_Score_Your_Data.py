@@ -133,6 +133,25 @@ def read_csv(data: bytes) -> pd.DataFrame:
         raise InputError([f"The file could not be parsed as CSV: {str(e).strip()}"]) from None
 
 
+_UTC_OFFSET = r"(?:Z|[+-]\d{2}:?\d{2})\s*$"
+
+
+def parse_timestamps(values: pd.Series) -> pd.Series:
+    """Parse a timestamp column into naive datetimes; unreadable values become NaT.
+
+    Historian exports often carry UTC offsets, and those change at a daylight-saving switch
+    (-06:00 to -05:00), which pandas refuses to put in one column. Any offset therefore means
+    "convert everything to UTC"; naive local times are kept exactly as written.
+    """
+    text = values.astype("string")
+    try:
+        if text.str.contains(_UTC_OFFSET, regex=True, na=False).any():
+            return pd.to_datetime(text, errors="coerce", format="mixed", utc=True).dt.tz_convert(None)
+        return pd.to_datetime(text, errors="coerce", format="mixed")
+    except (ValueError, TypeError, OverflowError):
+        return pd.Series(pd.NaT, index=values.index, dtype="datetime64[ns]")
+
+
 def prepare_readings(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     """Validate and normalise a readings table into the schema ``score_readings`` expects.
 
@@ -181,14 +200,12 @@ def prepare_readings(df: pd.DataFrame) -> tuple[pd.DataFrame, list[str]]:
     # time axis: integer hour, or a timestamp converted to hours since each pump's first reading
     use_ts = "timestamp" in df.columns and ("hour" not in df.columns or df["hour"].isna().all())
     if "timestamp" in df.columns:
-        ts = pd.to_datetime(df["timestamp"], errors="coerce", format="mixed")
+        ts = parse_timestamps(df["timestamp"])
         bad = ts.isna() & df["timestamp"].notna()
         if bad.any():
             problems.append(f"`timestamp` could not be read as a date/time on {int(bad.sum())} row(s) "
                             f"(e.g. {_examples(df.loc[bad, 'timestamp'])}; CSV line {_lines(bad)}). "
                             "Use ISO format such as 2025-03-01 14:00.")
-        if getattr(ts.dt, "tz", None) is not None:
-            ts = ts.dt.tz_convert(None)
         df["timestamp"] = ts
     if use_ts:
         if df["timestamp"].isna().any():
@@ -280,9 +297,7 @@ def prepare_events(df: pd.DataFrame, readings: pd.DataFrame) -> tuple[pd.DataFra
         origin = readings.groupby("asset_id")["timestamp"].min() - pd.to_timedelta(
             readings.groupby("asset_id")["hour"].min(), unit="h")
         for src, col in (("timestamp", "hour"), ("end_timestamp", "end_hour")):
-            ts = pd.to_datetime(df[src], errors="coerce", format="mixed")
-            if getattr(ts.dt, "tz", None) is not None:
-                ts = ts.dt.tz_convert(None)
+            ts = parse_timestamps(df[src])
             bad = ts.isna()
             if bad.any():
                 problems.append(f"Maintenance log `{src}` is not a date/time on CSV line {_lines(bad)}.")

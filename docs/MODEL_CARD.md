@@ -252,9 +252,13 @@ failures (85 %) follow a mechanism visible in a single snapshot, which caps any 
 
 1. Make sure the maintenance log is complete. Feature windows and baselines restart at every work
    order, so a missing work order corrupts the baseline of the cycle that follows it.
-2. Re-run the pipeline (`python -m sentinel_pdm train` on the site's data path). It refits every model
-   with grouped cross-validation and re-tunes calibration, conformal offsets and thresholds on the new
-   out-of-fold scores.
+2. Re-run the training. Note that `python -m sentinel_pdm train` as shipped always simulates a fresh
+   fleet and overwrites `data/`; training on site data needs a small loader that builds the same three
+   inputs from the historian and the CMMS (hourly readings without `gt_*` columns, the work-order log
+   with failure modes and, ideally, P points from root-cause analysis, and the asset register) and
+   passes them to the cleaning / feature / `train_models` steps in place of `simulate_fleet`. Those
+   steps then refit every model with grouped cross-validation and re-tune calibration, conformal
+   offsets and thresholds on the new out-of-fold scores.
 3. Never mix a new model with old thresholds, or the other way round: thresholds, calibrators and
    conformal offsets are only valid for the exact models they were tuned with, which is why they are
    saved together in one bundle.

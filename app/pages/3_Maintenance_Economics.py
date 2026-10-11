@@ -197,7 +197,8 @@ margin = hy["unplanned_each"] - hy["planned_each"]
 if system_cost and margin > 0:
     breakeven = system_cost / margin
     k4.metric("Break-even (breakdowns avoided)", f"{breakeven:,.1f} / yr",
-              delta=f"running cost repaid in {fmt_period(system_cost / gross if gross > 0 else np.inf)}",
+              delta=(f"running cost repaid in {fmt_period(system_cost / gross)}" if gross > system_cost
+                     else "savings do not cover the running cost"),
               **INFO_DELTA,
               help="Each breakdown turned into a planned repair saves "
                    f"{C.fmt_money(margin)}; the system pays its yearly running cost once it does that this many times.")
@@ -278,7 +279,10 @@ fig = go.Figure(go.Waterfall(
     hovertemplate="%{x}<br>$%{y:,.0f}<extra></extra>",
 ))
 fig.update_layout(title="Annual cost bridge", yaxis_title="USD per year", showlegend=False)
-fig.update_yaxes(range=[0, base["total_cost"] * 1.15 if base["total_cost"] else 1])
+# Size the axis to the tallest bar of the bridge, which is the end total when the system costs more
+# than it saves (not always the run-to-failure bar).
+running_top = np.cumsum([s[1] for s in steps if s[1] is not None]).max()
+fig.update_yaxes(range=[0, max(running_top, base["total_cost"], hy["total_cost"] + system_cost, 1) * 1.15])
 money_axis(fig, "y")
 st.plotly_chart(C.style_fig(fig, height=400, legend_top=False), width="stretch")
 st.caption(

@@ -8,6 +8,7 @@ or if a page stopped at the "no trained models" notice instead of rendering.
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 import pytest
@@ -29,7 +30,9 @@ def test_every_page_is_found():
 def test_page_renders_without_exceptions(page):
     missing = [p.name for p in REQUIRED if not p.exists()]
     if missing:
-        pytest.skip(f"the dashboard needs a trained pipeline ({', '.join(missing)} missing in {ARTIFACTS_DIR})")
+        # CI sets SENTINEL_REQUIRE_ARTIFACTS after its smoke-run training, so a skip there is a failure.
+        reason = f"the dashboard needs a trained pipeline ({', '.join(missing)} missing in {ARTIFACTS_DIR})"
+        (pytest.fail if os.environ.get("SENTINEL_REQUIRE_ARTIFACTS") else pytest.skip)(reason)
 
     at = AppTest.from_file(str(page), default_timeout=300).run()
 

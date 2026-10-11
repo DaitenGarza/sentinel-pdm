@@ -13,7 +13,8 @@ Rules, applied per pump:
    glitched. Temperatures follow the daily cycle, so they are checked against the median of the
    last 3 hours instead (thermal mass makes a +10 degC jump in one hour implausible). The first
    hours after a restart are exempt: a motor legitimately heats up 20 degC in its first hour.
-5. Short gaps (<= 6 h) are forward-filled (last good value), longer gaps stay missing.
+5. Gaps are forward-filled with the last good value for at most 6 h (this also covers hours blanked
+   by rules 3 and 4); the rest of a longer gap stays missing.
 """
 
 from __future__ import annotations

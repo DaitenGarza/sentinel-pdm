@@ -243,8 +243,10 @@ silently leak the future into a back-test. Rules, per pump and per tag:
    3 h with an absolute limit (8 °C bearing, 9 °C winding): thermal mass makes a 10 °C jump in one
    hour implausible. The first 6 hours after a restart are exempt, because a motor legitimately heats
    up by 20 °C in its first hour.
-5. **Short gaps** of up to 6 h are forward-filled with the last good value; longer gaps stay
-   missing (the gradient-boosting models handle missing values natively).
+5. **Gaps** are forward-filled with the last good value for at most 6 h; the rest of a longer gap
+   stays missing (the gradient-boosting models handle missing values natively). The fill also covers
+   hours blanked by rules 3 and 4, so a removed spike is replaced by the previous reading, and the
+   first 6 h after a stuck-tag cut-off carry the last reading before it.
 
 In the reference run cleaning removed 4,792 spikes and 12,148 stuck-tag hours. A per-pump
 data-quality summary (`data/quality.csv`) is shown in the dashboard because an engineer should know

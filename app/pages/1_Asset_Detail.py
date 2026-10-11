@@ -609,15 +609,18 @@ if t_vib.open is not False:
             st.info("No valid running speed around this hour, so there is nothing to reconstruct. Pick an hour "
                     "when the pump was running.")
         else:
-            auto = "random" if (elevated and mode == "cavitation") else "outer"
+            # Periodic bearing impacts only when the diagnosis is a bearing defect; anything else
+            # (cavitation, misalignment, winding, a healthy pump) gets random, non-periodic impacts.
+            diagnosed_bearing = elevated and mode == "bearing"
+            auto = "outer" if diagnosed_bearing else "random"
             options = ["auto", "outer", "inner", "ball", "random"]
             c_src, c_note = st.columns([2, 3], vertical_alignment="bottom")
             choice = c_src.selectbox(
                 "Impact source", options, key="detail_defect", persist_state="page",
                 format_func=lambda o: f"Auto: {S.DEFECT_LABELS[auto]}" if o == "auto" else S.DEFECT_LABELS[o],
-                help="Auto follows the diagnosis: random impacts for cavitation, otherwise an outer-race defect "
-                     "(the most common bearing defect under a stationary radial load). Pick another to see how "
-                     "a different defect would look.",
+                help="Auto follows the diagnosis: an outer-race defect (the most common bearing defect under a "
+                     "stationary radial load) when bearing wear is diagnosed, random impacts otherwise. Pick "
+                     "another to see how a different defect would look.",
             )
             defect = auto if choice == "auto" else choice
             c_note.caption("Healthy kurtosis is about 3. The reconstruction turns only the kurtosis above "
@@ -707,13 +710,20 @@ if t_vib.open is not False:
                 prom = {k: S.line_prominence(va["fe"], va["env"], fx) for k, fx in lines.items()}
                 best = max(prom, key=lambda k: prom[k] if np.isfinite(prom[k]) else -1)
                 excess = (vals["vib_kurtosis"] - S.HEALTHY_KURTOSIS) if finite(vals["vib_kurtosis"]) else 0.0
-                if np.isfinite(prom[best]) and prom[best] >= 5:
-                    st.success(f"**{best}** line stands {prom[best]:.0f}x above the envelope noise floor: the impacts "
-                               "repeat at that defect frequency, the classic confirmation of a damaged bearing.")
-                elif excess > 0 and defect == "random":
+                bearing_source = defect in ("outer", "inner", "ball")
+                if bearing_source and np.isfinite(prom[best]) and prom[best] >= 5:
+                    basis = ("matching the bearing-wear diagnosis" if diagnosed_bearing and choice == "auto"
+                             else "for the defect type selected above")
+                    st.success(f"In this reconstruction the **{best}** line stands {prom[best]:.0f}x above the "
+                               f"envelope noise floor ({basis}). Impacts repeating at a defect frequency are what an "
+                               "analyst looks for in a real envelope measurement to confirm a damaged bearing.")
+                elif excess > 0 and defect == "random" and elevated and mode == "cavitation":
                     st.warning("Impacts are present (raised kurtosis), but no defect frequency stands out in the "
                                "envelope spectrum. Random impacts point to **cavitation** rather than a bearing defect: "
                                "check suction pressure and NPSH margin.")
+                elif excess > 0 and defect == "random":
+                    st.info("Kurtosis is raised, but the impacts are not periodic: no bearing defect frequency stands "
+                            "out in the envelope spectrum.")
                 else:
                     st.info("No discrete bearing defect line in the envelope spectrum: the high-frequency band is "
                             "random, as for a healthy bearing.")

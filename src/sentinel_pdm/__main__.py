@@ -88,7 +88,7 @@ def _cmd_report(_: argparse.Namespace) -> int:
 def _cmd_app(args: argparse.Namespace) -> int:
     app = PROJECT_ROOT / "app" / "Home.py"
     cmd = [sys.executable, "-m", "streamlit", "run", str(app), "--server.port", str(args.port),
-           "--browser.gatherUsageStats", "false"]
+           "--server.address", "localhost", "--browser.gatherUsageStats", "false"]
     return subprocess.call(cmd, cwd=PROJECT_ROOT)
 
 

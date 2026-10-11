@@ -80,6 +80,11 @@ jobs:
       - name: End-to-end smoke run (small fleet)
         run: python -m sentinel_pdm train --quick --no-importance
 
+      - name: Dashboard pages render against the smoke-run artifacts
+        env:
+          SENTINEL_REQUIRE_ARTIFACTS: "1"
+        run: python -m pytest tests/test_dashboard.py -p no:cacheprovider
+
   launchers:
     name: Launchers / ${{ matrix.os }}
     needs: test
